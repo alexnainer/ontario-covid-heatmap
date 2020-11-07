@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import mapboxgl from "mapbox-gl";
 import "./MapContainer.css";
 
@@ -18,15 +17,18 @@ class MapContainer extends Component {
     });
   }
 
-  componentDidUpdate() {
-    console.log("didUpdate");
-    map.on("load", function () {
-      map.resize();
-    });
-  }
-
   render() {
-    return <div ref={(el) => (this.mapContainer = el)} id="map" />;
+    return (
+      <div className="d-flex justify-content-center">
+        <div className="map-container">
+          <div
+            ref={(el) => (this.mapContainer = el)}
+            id="map"
+            className="map"
+          />
+        </div>
+      </div>
+    );
   }
 }
 

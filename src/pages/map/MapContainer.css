@@ -1,4 +1,17 @@
-/* .map {
-    height: 100%;
-    width
+.map-container {
+  position: relative;
+  height: 700px;
+  width: 80%;
+}
+
+.map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* .mapboxgl-canvas {
+  left: 0;
 } */
