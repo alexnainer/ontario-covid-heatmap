@@ -251,16 +251,32 @@ class MapContainer extends Component {
           "</p1>" +
           "<h6>Schools:</h6>";
 
+          let descriptionLtr =
+          "<h6>City:</h6>" +
+          "<p1>" +
+          e.features[0].properties.city +
+          "</p1>" +
+          "<h6>Long Term Care Home:</h6>";
+
         if (e.features[0].properties.healthUnit) {
           description = descriptionPsu;
-        } else {
+        } else if (e.features[0].properties.ltr) {
+        const schoolNames = e.features[0].properties.schoolNames.split(",");
+        if (schoolNames.length > 1) {
+          descriptionLtr += "<ul>";
+        }
+        for (const school of schoolNames) {
+          descriptionLtr += `<li>${school}</li>`;
+        }
+        descriptionLtr += "</ul>";
+        description = descriptionLtr;
+      } else {
           const schoolNames = e.features[0].properties.schoolNames.split(",");
           if (schoolNames.length > 1) {
             descriptionSchool += "<ul>";
           }
           for (const school of schoolNames) {
             descriptionSchool += `<li>${school}</li>`;
-            console.log("school", school);
           }
           descriptionSchool += "</ul>";
           description = descriptionSchool;
