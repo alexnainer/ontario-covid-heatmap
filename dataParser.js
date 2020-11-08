@@ -1,10 +1,13 @@
 const dataParser = (data) => {
-  const cities = {};
-
+  let cities = {};
+  let min = Number.MAX_SAFE_INTEGER;
+  let max = 0;
+  
   data.result.records.forEach((record) => {
-    const phuCity = record.Reporting_PHU_City;
-    if (cities[phuCity]) {
-      cities[phuCity].geoJson.properties.caseNum++;
+  const phuCity = record.Reporting_PHU_City;
+    
+  if (cities[phuCity]) {
+    cities[phuCity].geoJson.properties.caseNum++;
     } else {
       cities[phuCity] = {
         geoJson: {
@@ -21,11 +24,31 @@ const dataParser = (data) => {
             healthUnit: record.Reporting_PHU,
             city: record.Reporting_PHU_City,
             caseNum: 1,
+            caseNumNormalized: 1,
           },
         },
       };
     }
+    if (cities[phuCity].geoJson.properties.caseNum < min) {
+      min = cities[phuCity].geoJson.properties.caseNum;
+    } if (cities[phuCity].geoJson.properties.caseNum > max) {
+      max = cities[phuCity].geoJson.properties.caseNum;
+    }
   });
+
+  cities = Object.values(cities).map((city) => {
+    return {
+      geoJson: {
+        ...city.geoJson,
+        properties: {
+          ...city.geoJson.properties,
+          caseNumNormalized:
+            (city.geoJson.properties.caseNum - min) / (max - min),
+        },
+      },
+    };
+  });
+  console.log("cities" + cities);
   const geoJson = Object.values(cities).map((city) => city.geoJson);
   return {
     type: "FeatureCollection",
