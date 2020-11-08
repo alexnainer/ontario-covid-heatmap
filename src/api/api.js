@@ -18,6 +18,10 @@ const api = {
   getSchoolHeatMap() {
     return axios.get(`/schools`);
   },
+
+  getLtrHeatMap() {
+    return axios.get(`/ltr`);
+  },
 };
 
 export default api;

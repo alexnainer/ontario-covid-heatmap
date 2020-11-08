@@ -3,13 +3,14 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import "./MapOptions.css";
 
 class MapOptions extends Component {
   render() {
     const { options, disabled } = this.props;
     return (
       <div>
-        <div className="row justify-content-center pb-2">
+        <div className="row justify-content-center pb-2 mx-0">
           <div className="col-auto">
             <FormControl disabled={disabled}>
               <InputLabel>Gender</InputLabel>
@@ -84,6 +85,10 @@ class MapOptions extends Component {
               </Select>
             </FormControl>
           </div>
+
+          <h2 className="col-auto position-absolute num-of-cases">
+            Number of Cases: {this.props.numOfCases}
+          </h2>
         </div>
       </div>
     );

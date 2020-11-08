@@ -328,6 +328,9 @@ class MapContainer extends Component {
       case "schools":
         response = await api.getSchoolHeatMap();
         break;
+      case "ltr":
+        response = await api.getLtrHeatMap();
+        break;
       default:
     }
     map.getSource("phu").setData(response.data);
@@ -341,6 +344,7 @@ class MapContainer extends Component {
           options={this.state.options}
           handleOptionChange={this.handleOptionChange}
           disabled={this.state.loading || this.state.source === "schools"}
+          numOfCases={this.state.heatMapData?.crs?.properties?.totalCases ?? ""}
         />
         <MapSourceOptions
           className="position-absolute map-source-options"
