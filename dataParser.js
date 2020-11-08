@@ -30,8 +30,8 @@ const dataParser = async () => {
       };
     }
   });
-  const geoJson = Object.values(cities);
-  console.log("cities", cities);
+  const geoJson = Object.values(cities).map(city => city.geoJson);
+  console.log("cities", geoJson);
 };
 
 module.exports = dataParser;
