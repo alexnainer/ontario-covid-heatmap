@@ -1,5 +1,6 @@
 const api = require("./api");
 const coordinates = require("./coordinates.json");
+const coordinatesLtr = require("./coordinatesLtr.json");
 
 const parsePhu = (data) => {
   let cities = {};
@@ -57,7 +58,10 @@ const parsePhu = (data) => {
     type: "FeatureCollection",
     crs: {
       type: "name",
-      properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+      properties: {
+        name: "urn:ogc:def:crs:OGC:1.3:CRS84",
+        totalCases: data.result.records.length,
+      },
     },
     features: geoJson,
   };
@@ -90,18 +94,24 @@ const parseSchools = async (data) => {
       cities[city].geoJson.properties.caseNum += schools[school].caseNum;
       cities[city].geoJson.properties.schoolNames += `,${school}`;
     } else {
-      //   const query = `${city} Ontario`;
-      //   const { data } = await api.getGeocoding(query);
-      //   coordinates[city] = {
-      //     coordinates: coordinates[city].coordinates,
-      //   };
-      console.log("coordinates[city]", coordinates[city]);
+      let coords = [];
+      if (coordinates[city]) {
+        coords = coordinates[city].coordinates;
+      } else {
+        console.log(city);
+        const query = `${city} Ontario`;
+        const { data } = await api.getGeocoding(query);
+        coords = data.features[0].geometry.coordinates;
+        // coordinates[city] = {
+        //   coordinates: coordinates[city].coordinates,
+        // };
+      }
       cities[city] = {
         geoJson: {
           type: "feature",
           geometry: {
             type: "Point",
-            coordinates: coordinates[city].coordinates,
+            coordinates: coords,
           },
           properties: {
             id: city,
@@ -142,21 +152,134 @@ const parseSchools = async (data) => {
     type: "FeatureCollection",
     crs: {
       type: "name",
-      properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+      properties: {
+        name: "urn:ogc:def:crs:OGC:1.3:CRS84",
+        totalCases: data.result.records.length,
+      },
     },
     features: geoJson,
   };
 };
 
-// const dataParserLtc = async () => {
-//   // change below call
-//   const { data } = await api.getAllData();
+const parseLtr = async (data) => {
+  const ltrs = {};
+  const coordinates1 = {};
+  let cities = {};
+  let min = Number.MAX_SAFE_INTEGER;
+  let max = 0;
 
-//   const longCareHomes = {};
+  for (record of data.result.records) {
+    const ltrName = record.LTC_Home;
+    if (record.Total_LTC_HCW_Cases.substring(0, 1) === "<") {
+      record.Total_LTC_HCW_Cases = parseInt(
+        record.Total_LTC_HCW_Cases.substring(1)
+      );
+    } else {
+      record.Total_LTC_HCW_Cases = parseInt(record.Total_LTC_HCW_Cases);
+    }
 
-//   data.result.records.forEach((record) => {
-//     const longCareHome = record.LTC_Home;
-//     if (longCareHomes[longCareHome])
-//   })
+    if (record.Total_LTC_Resident_Cases.substring(0, 1) === "<") {
+      record.Total_LTC_Resident_Cases = parseInt(
+        record.Total_LTC_Resident_Cases.substring(1)
+      );
+    } else {
+      record.Total_LTC_Resident_Cases = parseInt(
+        record.Total_LTC_Resident_Cases
+      );
+    }
 
-module.exports = { parsePhu, parseSchools };
+    const totalCases =
+      record.Total_LTC_Resident_Cases + record.Total_LTC_HCW_Cases;
+    if (ltrs[ltrName]) {
+      if (totalCases > ltrs[ltrName].caseNum) {
+        ltrs[ltrName].caseNum = totalCases;
+      }
+    } else {
+      ltrs[ltrName] = {
+        city: record.City.trim(),
+        caseNum: totalCases,
+      };
+    }
+  }
+
+  for (ltr of Object.keys(ltrs)) {
+    const city = ltrs[ltr].city;
+    if (cities[city]) {
+      cities[city].geoJson.properties.caseNum += ltrs[ltr].caseNum;
+      cities[city].geoJson.properties.schoolNames += `,${ltr}`;
+    } else {
+      let coords = [];
+      if (coordinates[city]) {
+        coords = coordinates[city].coordinates;
+      } else {
+        console.log(city);
+        const query = `${city} Ontario`;
+        const { data } = await api.getGeocoding(query);
+        coords = data.features[0].geometry.coordinates;
+      }
+      cities[city] = {
+        geoJson: {
+          type: "feature",
+          geometry: {
+            type: "Point",
+            coordinates: coords,
+          },
+          properties: {
+            id: city,
+            city,
+            caseNum: ltrs[ltr].caseNum,
+            schoolNames: ltr,
+            ltr,
+          },
+        },
+      };
+    }
+
+    if (cities[city].geoJson.properties.caseNum < min) {
+      min = cities[city].geoJson.properties.caseNum;
+    }
+    if (cities[city].geoJson.properties.caseNum > max) {
+      max = cities[city].geoJson.properties.caseNum;
+    }
+  }
+
+  //   console.log("coordinates", coordinates1);
+
+  //   fs.writeFile("coordinatesLtr.json", JSON.stringify(coordinates1), (err) => {
+  //     // throws an error, you could also catch it here
+  //     if (err) throw err;
+
+  //     // success case, the file was saved
+  //     console.log("Lyric saved!");
+  //   });
+
+  cities = Object.values(cities).map((city) => {
+    return {
+      geoJson: {
+        ...city.geoJson,
+        properties: {
+          ...city.geoJson.properties,
+          caseNumNormalized:
+            (city.geoJson.properties.caseNum - min) / (max - min),
+        },
+      },
+    };
+  });
+
+  const geoJson = Object.values(cities).map((city) => city.geoJson);
+
+  console.log("geoJson", geoJson);
+  return {
+    type: "FeatureCollection",
+    crs: {
+      type: "name",
+      properties: {
+        name: "urn:ogc:def:crs:OGC:1.3:CRS84",
+        totalCases: data.result.records.length,
+      },
+    },
+    features: geoJson,
+  };
+};
+
+module.exports = { parsePhu, parseSchools, parseLtr };

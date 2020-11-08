@@ -43,4 +43,11 @@ router.get("/ontario/schools", async (req, res) => {
   res.send(parsedData);
 });
 
+router.get("/ontario/ltr", async (req, res) => {
+  const result = await api.getLtrData();
+
+  const parsedData = await dataParser.parseLtr(result.data);
+  res.send(parsedData);
+});
+
 module.exports = router;
