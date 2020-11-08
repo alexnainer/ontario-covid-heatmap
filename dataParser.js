@@ -73,6 +73,7 @@ const parseSchools = async (data) => {
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
+  let totalCases = 0;
 
   for (record of data.result.records) {
     const schoolName = record.school;
@@ -92,7 +93,10 @@ const parseSchools = async (data) => {
     const city = schools[school].city;
     if (cities[city]) {
       cities[city].geoJson.properties.caseNum += schools[school].caseNum;
-      cities[city].geoJson.properties.schoolNames += `,${school}`;
+      totalCases += schools[school].caseNum;
+      cities[
+        city
+      ].geoJson.properties.schoolNames += `,${school} (${schools[school].caseNum})`;
     } else {
       let coords = [];
       if (coordinates[city]) {
@@ -106,6 +110,7 @@ const parseSchools = async (data) => {
         //   coordinates: coordinates[city].coordinates,
         // };
       }
+      totalCases += schools[school].caseNum;
       cities[city] = {
         geoJson: {
           type: "feature",
@@ -117,7 +122,7 @@ const parseSchools = async (data) => {
             id: city,
             city,
             caseNum: schools[school].caseNum,
-            schoolNames: school,
+            schoolNames: `${school} (${schools[school].caseNum})`,
           },
         },
       };
@@ -154,7 +159,7 @@ const parseSchools = async (data) => {
       type: "name",
       properties: {
         name: "urn:ogc:def:crs:OGC:1.3:CRS84",
-        totalCases: data.result.records.length,
+        totalCases,
       },
     },
     features: geoJson,
@@ -167,6 +172,7 @@ const parseLtr = async (data) => {
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
+  let totalCases = 0;
 
   for (record of data.result.records) {
     const ltrName = record.LTC_Home;
@@ -206,7 +212,10 @@ const parseLtr = async (data) => {
     const city = ltrs[ltr].city;
     if (cities[city]) {
       cities[city].geoJson.properties.caseNum += ltrs[ltr].caseNum;
-      cities[city].geoJson.properties.schoolNames += `,${ltr}`;
+      cities[
+        city
+      ].geoJson.properties.schoolNames += `,${ltr} (${ltrs[ltr].caseNum})`;
+      totalCases += ltrs[ltr].caseNum;
     } else {
       let coords = [];
       if (coordinates[city]) {
@@ -217,6 +226,7 @@ const parseLtr = async (data) => {
         const { data } = await api.getGeocoding(query);
         coords = data.features[0].geometry.coordinates;
       }
+      totalCases += ltrs[ltr].caseNum;
       cities[city] = {
         geoJson: {
           type: "feature",
@@ -228,7 +238,7 @@ const parseLtr = async (data) => {
             id: city,
             city,
             caseNum: ltrs[ltr].caseNum,
-            schoolNames: ltr,
+            schoolNames: `${ltr} (${ltrs[ltr].caseNum})`,
             ltr,
           },
         },
@@ -275,7 +285,7 @@ const parseLtr = async (data) => {
       type: "name",
       properties: {
         name: "urn:ogc:def:crs:OGC:1.3:CRS84",
-        totalCases: data.result.records.length,
+        totalCases,
       },
     },
     features: geoJson,
