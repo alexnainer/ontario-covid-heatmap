@@ -12,7 +12,7 @@ const dataParser = async () => {
     } else {
       cities[phuCity] = {
         geoJson: {
-          type: "feature",
+          type: "Feature",
           geometry: {
             type: "Point",
             coordinates: [
@@ -30,8 +30,15 @@ const dataParser = async () => {
       };
     }
   });
-  const geoJson = Object.values(cities).map(city => city.geoJson);
-  console.log("cities", geoJson);
+  const geoJson = Object.values(cities).map((city) => city.geoJson);
+  return {
+    type: "FeatureCollection",
+    crs: {
+      type: "name",
+      properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+    },
+    features: geoJson,
+  };
 };
 
 const dataParserSchools = async () => {
@@ -43,28 +50,30 @@ const dataParserSchools = async () => {
   data.result.records.forEach((record) => {
     const schoolName = record.school;
     if (schools[school]) {
-      if (record.total_confirmed_cases > schools[school].geoJson.properties.caseNum) {
-        schools[school].geoJson.properties.caseNum = record.total_confirmed_cases;
+      if (
+        record.total_confirmed_cases >
+        schools[school].geoJson.properties.caseNum
+      ) {
+        schools[school].geoJson.properties.caseNum =
+          record.total_confirmed_cases;
       }
-      
     } else {
       schools[schoolName] = {
         geoJson: {
           type: "feature",
-          geometry:{
-            type:"Point",
-            coordinates : []
+          geometry: {
+            type: "Point",
+            coordinates: [],
           },
-          properties : {
-              id: schoolName,
-              caseNum: record.total_confirmed_cases
-          }
-        }
+          properties: {
+            id: schoolName,
+            caseNum: record.total_confirmed_cases,
+          },
+        },
       };
     }
-  })
-}
-
+  });
+};
 
 // const dataParserLtc = async () => {
 //   // change below call
@@ -76,6 +85,5 @@ const dataParserSchools = async () => {
 //     const longCareHome = record.LTC_Home;
 //     if (longCareHomes[longCareHome])
 //   })
-
 
 module.exports = dataParser;

@@ -2,6 +2,11 @@ const express = require("express");
 const app = express();
 const port = 3001;
 
+const cors = require("cors");
+
+app.use(cors());
+app.options("*", cors());
+
 const router = require("./routes");
 app.use("/api/v1.0", router);
 
