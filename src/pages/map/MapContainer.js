@@ -302,7 +302,7 @@ class MapContainer extends Component {
           handleOptionChange={this.handleOptionChange}
         />
         <MapSourceOptions
-          className="position-absolute pl-1 map-source-options"
+          className="position-absolute map-source-options"
           source={this.state.source}
           handleSourceChange={this.handleSourceChange}
         />
