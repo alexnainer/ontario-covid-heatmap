@@ -1,8 +1,4 @@
-const api = require("./api");
-
-const dataParser = async () => {
-  const { data } = await api.getAllData();
-
+const dataParser = (data) => {
   const cities = {};
 
   data.result.records.forEach((record) => {
