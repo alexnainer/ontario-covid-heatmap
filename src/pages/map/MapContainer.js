@@ -3,6 +3,7 @@ import MapOptions from "./MapOptions";
 import mapboxgl from "mapbox-gl";
 import "./MapContainer.css";
 import phuApi from "../../api/phuApi";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_API_KEY;
 let map;
@@ -35,38 +36,28 @@ class MapContainer extends Component {
       style: "mapbox://styles/mapbox/streets-v11",
     });
 
-    
     map.on("load", function () {
       map.resize();
-      
 
       map.addSource("phu", {
         type: "geojson",
         data,
       });
 
-    
-
       map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'phu',
-        filter: ['has', 'caseNum'],
+        id: "cluster-count",
+        type: "symbol",
+        source: "phu",
+        filter: ["has", "caseNum"],
         layout: {
-        'text-field': '{caseNum}',
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-        'text-size': [
-          'step',
-          ["zoom"],
-          0,
-          7,
-          12
-        ]
+          "text-field": "{caseNum}",
+          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+          "text-size": ["step", ["zoom"], 0, 7, 12],
         },
         paint: {
-          "text-color": "#ffffff"
-        }
-        });
+          "text-color": "#ffffff",
+        },
+      });
 
       map.addLayer(
         {
@@ -74,19 +65,18 @@ class MapContainer extends Component {
           type: "heatmap",
           source: "phu",
           paint: {
-
             "heatmap-weight": [
               "interpolate",
               ["linear"],
               ["get", "caseNumNormalized"],
-                0.25,
-                5,
-                0.50,
-                10,
-                0.75,
-                20,
-                1.0,
-                40,
+              0.25,
+              5,
+              0.5,
+              10,
+              0.75,
+              20,
+              1.0,
+              40,
             ],
 
             "heatmap-intensity": [
@@ -103,20 +93,20 @@ class MapContainer extends Component {
               "interpolate",
               ["linear"],
               ["heatmap-density"],
-                  0.0,
-                  "rgba(0,0,255,0)",
-                  1.0,
-                  "rgb(0,0,255)",
+              0.0,
+              "rgba(0,0,255,0)",
+              1.0,
+              "rgb(0,0,255)",
             ],
 
             "heatmap-radius": [
               "interpolate",
               ["linear"],
-              ['zoom'],
-              0, 
+              ["zoom"],
+              0,
               [
-                'interpolate',
-                ['linear'],
+                "interpolate",
+                ["linear"],
                 ["get", "caseNumNormalized"],
                 0.25,
                 20,
@@ -127,11 +117,12 @@ class MapContainer extends Component {
                 1.0,
                 35,
               ],
-              100, [
-              'interpolate',
-              ['linear'],
-              ["get", "caseNumNormalized"],
-              0.25,
+              100,
+              [
+                "interpolate",
+                ["linear"],
+                ["get", "caseNumNormalized"],
+                0.25,
                 18,
                 0.5,
                 23,
@@ -139,7 +130,7 @@ class MapContainer extends Component {
                 28,
                 1.0,
                 33,
-              ]
+              ],
             ],
 
             "heatmap-opacity": [
@@ -152,15 +143,15 @@ class MapContainer extends Component {
               8,
             ],
 
-            'heatmap-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-                5,
-                1,
-                7,
-                0
-              ]
+            "heatmap-opacity": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              5,
+              1,
+              7,
+              0,
+            ],
           },
         },
         "waterway-label"
@@ -175,15 +166,15 @@ class MapContainer extends Component {
             "circle-radius": [
               "interpolate",
               ["linear"],
-                ['get', 'caseNumNormalized'],
-                0.25,
-                18,
-                0.50,
-                23,
-                0.75,
-                28,
-                1.0,
-                33,
+              ["get", "caseNumNormalized"],
+              0.25,
+              18,
+              0.5,
+              23,
+              0.75,
+              28,
+              1.0,
+              33,
             ],
 
             "circle-color": [
@@ -192,7 +183,7 @@ class MapContainer extends Component {
               ["get", "caseNumNormalized"],
               0.25,
               "rgb(0,102,0)",
-              0.50,
+              0.5,
               "rgb(255,255,0)",
               0.75,
               "rgb(255,128,0)",
@@ -207,31 +198,19 @@ class MapContainer extends Component {
         "waterway-label"
       );
     });
-  
   }
 
-  handleGenderChange = async (event) => {
+  handleOptionChange = async (field, value) => {
     await this.setState({
-      options: { ...this.state.options, gender: event.target.value },
+      options: {
+        ...this.state.options,
+        [field]: value,
+      },
+      loading: true,
     });
-    const data = await phuApi.getHeatMap(this.state.options);
-    this.setState({ data });
-  };
-
-  handleOutcomeChange = async (event) => {
-    await this.setState({
-      options: { ...this.state.options, outcome: event.target.value },
-    });
-    const data = await phuApi.getHeatMap(this.state.options);
-    this.setState({ data });
-  };
-
-  handleAgeChange = async (event) => {
-    await this.setState({
-      options: { ...this.state.options, age: event.target.value },
-    });
-    const data = await phuApi.getHeatMap(this.state.options);
-    this.setState({ data });
+    const { data } = await phuApi.getHeatMap(this.state.options);
+    map.getSource("phu").setData(data);
+    this.setState({ heatMapData: data, loading: false });
   };
 
   render() {
@@ -239,11 +218,14 @@ class MapContainer extends Component {
       <div>
         <MapOptions
           options={this.state.options}
-          handleGenderChange={this.handleGenderChange}
-          handleOutcomeChange={this.handleOutcomeChange}
-          handleAgeChange={this.handleAgeChange}
+          handleOptionChange={this.handleOptionChange}
         />
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center align-items-center">
+          {this.state.loading && (
+            <div className="loading position-absolute d-flex justify-content-center align-items-center">
+              <CircularProgress />
+            </div>
+          )}
           <div className="map-container">
             <div
               ref={(el) => (this.mapContainer = el)}

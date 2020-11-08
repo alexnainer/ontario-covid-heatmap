@@ -15,7 +15,9 @@ class MapOptions extends Component {
               <InputLabel>Gender</InputLabel>
               <Select
                 value={options.gender}
-                onChange={this.props.handleGenderChange}
+                onChange={(e) =>
+                  this.props.handleOptionChange("gender", e.target.value)
+                }
               >
                 <MenuItem value={"all"}>All</MenuItem>
                 <MenuItem value={"MALE"}>Male</MenuItem>
@@ -29,7 +31,9 @@ class MapOptions extends Component {
               <InputLabel>Outcome</InputLabel>
               <Select
                 value={options.outcome}
-                onChange={this.props.handleOutcomeChange}
+                onChange={(e) =>
+                  this.props.handleOptionChange("outcome", e.target.value)
+                }
               >
                 <MenuItem value={"all"}>Total</MenuItem>
                 <MenuItem value={"Resolved"}>Resolved</MenuItem>
@@ -41,7 +45,12 @@ class MapOptions extends Component {
           <div className="col-auto">
             <FormControl>
               <InputLabel>Age</InputLabel>
-              <Select value={options.age} onChange={this.props.handleAgeChange}>
+              <Select
+                value={options.age}
+                onChange={(e) =>
+                  this.props.handleOptionChange("age", e.target.value)
+                }
+              >
                 <MenuItem value={"all"}>All</MenuItem>
                 <MenuItem value={"10s"}>10-19</MenuItem>
                 <MenuItem value={"20s"}>20-29</MenuItem>
