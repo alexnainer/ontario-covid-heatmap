@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import MapOptions from "./MapOptions";
+import MapSourceOptions from "./MapSourceOptions";
 import mapboxgl from "mapbox-gl";
 import "./MapContainer.css";
-import phuApi from "../../api/phuApi";
+import api from "../../api/api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_API_KEY;
@@ -19,11 +20,12 @@ class MapContainer extends Component {
         outcome: "all",
         age: "all",
       },
+      source: "psu",
     };
   }
 
   async componentDidMount() {
-    const { data } = await phuApi.getHeatMap(this.state.options);
+    const { data } = await api.getPhuHeatMap(this.state.options);
     console.log("data", data);
     this.setState({ heatMapData: data, loading: false });
 
@@ -35,7 +37,6 @@ class MapContainer extends Component {
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
     });
-
 
     map.on("load", function () {
       map.resize();
@@ -109,44 +110,44 @@ class MapContainer extends Component {
                 "interpolate",
                 ["linear"],
                 ["get", "caseNumNormalized"],
-                0.10,
-              18,
-              0.20,
-              23,
-              0.30,
-              28,
-              0.40,
-              33,
-              0.50,
-              39,
-              0.60,
-              45,
-              0.70,
-              51,
-              1.0,
-              55
+                0.1,
+                18,
+                0.2,
+                23,
+                0.3,
+                28,
+                0.4,
+                33,
+                0.5,
+                39,
+                0.6,
+                45,
+                0.7,
+                51,
+                1.0,
+                55,
               ],
               100,
               [
                 "interpolate",
                 ["linear"],
                 ["get", "caseNumNormalized"],
-                0.10,
-              16,
-              0.20,
-              21,
-              0.30,
-              26,
-              0.40,
-              31,
-              0.50,
-              37,
-              0.60,
-              43,
-              0.70,
-              49,
-              1.0,
-              53
+                0.1,
+                16,
+                0.2,
+                21,
+                0.3,
+                26,
+                0.4,
+                31,
+                0.5,
+                37,
+                0.6,
+                43,
+                0.7,
+                49,
+                1.0,
+                53,
               ],
             ],
 
@@ -184,22 +185,22 @@ class MapContainer extends Component {
               "interpolate",
               ["linear"],
               ["get", "caseNumNormalized"],
-              0.10,
+              0.1,
               18,
-              0.20,
+              0.2,
               23,
-              0.30,
+              0.3,
               28,
-              0.40,
+              0.4,
               33,
-              0.50,
+              0.5,
               39,
-              0.60,
+              0.6,
               45,
-              0.70,
+              0.7,
               51,
               1.0,
-              55
+              55,
             ],
 
             "circle-color": [
@@ -226,35 +227,40 @@ class MapContainer extends Component {
       );
       var popup = new mapboxgl.Popup({
         closeButton: false,
-        closeOnClick: false
-        });
-  
-        map.on('mouseenter', 'phu-point', function (e) {
-          map.getCanvas().style.cursor = 'pointer';
-           
-          var coordinates = e.features[0].geometry.coordinates.slice();
-          var description = "<h6>Public Health Unit:</h6>" + "<p1>" + e.features[0].properties.healthUnit + "</p1>" +"<h6 padding=4px>Case Number:</h6>" +  "<p1>" + e.features[0].properties.caseNum + "</p1>";
-           
-          while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        closeOnClick: false,
+      });
+
+      map.on("mouseenter", "phu-point", function (e) {
+        map.getCanvas().style.cursor = "pointer";
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description =
+          "<h6>Public Health Unit:</h6>" +
+          "<p1>" +
+          e.features[0].properties.healthUnit +
+          "</p1>" +
+          "<h6 padding=4px>Case Number:</h6>" +
+          "<p1>" +
+          e.features[0].properties.caseNum +
+          "</p1>";
+
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-          }
-           
-          popup.setLngLat(coordinates).setHTML(description).addTo(map);
-          });
-           
-          map.on('mouseleave', 'phu-point', function () {
-          map.getCanvas().style.cursor = '';
-          popup.remove();
-          });
-  
-          map.on('mouseleave', 'phu-point', function () {
-            map.getCanvas().style.cursor = '';
-            popup.remove();
-            });
+        }
+
+        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+      });
+
+      map.on("mouseleave", "phu-point", function () {
+        map.getCanvas().style.cursor = "";
+        popup.remove();
+      });
+
+      map.on("mouseleave", "phu-point", function () {
+        map.getCanvas().style.cursor = "";
+        popup.remove();
+      });
     });
-
-
-    
   }
 
   handleOptionChange = async (field, value) => {
@@ -265,9 +271,27 @@ class MapContainer extends Component {
       },
       loading: true,
     });
-    const { data } = await phuApi.getHeatMap(this.state.options);
+    const { data } = await api.getPhuHeatMap(this.state.options);
     map.getSource("phu").setData(data);
     this.setState({ heatMapData: data, loading: false });
+  };
+
+  handleSourceChange = async (source) => {
+    this.setState({ loading: true, source });
+
+    let response;
+
+    switch (source) {
+      case "psu":
+        response = await api.getPhuHeatMap(this.state.options);
+        break;
+      case "schools":
+        response = await api.getSchoolHeatMap();
+        break;
+      default:
+    }
+    map.getSource("phu").setData(response.data);
+    this.setState({ heatMapData: response.data, loading: false });
   };
 
   render() {
@@ -276,6 +300,11 @@ class MapContainer extends Component {
         <MapOptions
           options={this.state.options}
           handleOptionChange={this.handleOptionChange}
+        />
+        <MapSourceOptions
+          className="position-absolute pl-1 map-source-options"
+          source={this.state.source}
+          handleSourceChange={this.handleSourceChange}
         />
         <div className="d-flex justify-content-center align-items-center">
           {this.state.loading && (

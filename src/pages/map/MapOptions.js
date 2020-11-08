@@ -38,6 +38,7 @@ class MapOptions extends Component {
                 <MenuItem value={"all"}>Total</MenuItem>
                 <MenuItem value={"Resolved"}>Resolved</MenuItem>
                 <MenuItem value={"Not Resolved"}>Active</MenuItem>
+                <MenuItem value={"Fatal"}>Fatal</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -52,12 +53,15 @@ class MapOptions extends Component {
                 }
               >
                 <MenuItem value={"all"}>All</MenuItem>
-                <MenuItem value={"10s"}>10-19</MenuItem>
+                <MenuItem value={"<20"}>{"<20"}</MenuItem>
                 <MenuItem value={"20s"}>20-29</MenuItem>
                 <MenuItem value={"30s"}>30-39</MenuItem>
                 <MenuItem value={"40s"}>40-49</MenuItem>
                 <MenuItem value={"50s"}>50-59</MenuItem>
                 <MenuItem value={"60s"}>60-69</MenuItem>
+                <MenuItem value={"70s"}>70-79</MenuItem>
+                <MenuItem value={"80s"}>80-89</MenuItem>
+                <MenuItem value={"90s"}>90-99</MenuItem>
               </Select>
             </FormControl>
           </div>
