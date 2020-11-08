@@ -36,6 +36,7 @@ class MapContainer extends Component {
       style: "mapbox://styles/mapbox/streets-v11",
     });
 
+
     map.on("load", function () {
       map.resize();
 
@@ -52,7 +53,7 @@ class MapContainer extends Component {
         layout: {
           "text-field": "{caseNum}",
           "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-          "text-size": ["step", ["zoom"], 0, 7, 12],
+          "text-size": ["step", ["zoom"], 0, 7.5, 12],
         },
         paint: {
           "text-color": "#ffffff",
@@ -108,28 +109,44 @@ class MapContainer extends Component {
                 "interpolate",
                 ["linear"],
                 ["get", "caseNumNormalized"],
-                0.25,
-                20,
-                0.5,
-                25,
-                0.75,
-                30,
-                1.0,
-                35,
+                0.10,
+              18,
+              0.20,
+              23,
+              0.30,
+              28,
+              0.40,
+              33,
+              0.50,
+              39,
+              0.60,
+              45,
+              0.70,
+              51,
+              1.0,
+              55
               ],
               100,
               [
                 "interpolate",
                 ["linear"],
                 ["get", "caseNumNormalized"],
-                0.25,
-                18,
-                0.5,
-                23,
-                0.75,
-                28,
-                1.0,
-                33,
+                0.10,
+              16,
+              0.20,
+              21,
+              0.30,
+              26,
+              0.40,
+              31,
+              0.50,
+              37,
+              0.60,
+              43,
+              0.70,
+              49,
+              1.0,
+              53
               ],
             ],
 
@@ -167,28 +184,38 @@ class MapContainer extends Component {
               "interpolate",
               ["linear"],
               ["get", "caseNumNormalized"],
-              0.25,
+              0.10,
               18,
-              0.5,
+              0.20,
               23,
-              0.75,
+              0.30,
               28,
-              1.0,
+              0.40,
               33,
+              0.50,
+              39,
+              0.60,
+              45,
+              0.70,
+              51,
+              1.0,
+              55
             ],
 
             "circle-color": [
               "interpolate",
               ["linear"],
               ["get", "caseNumNormalized"],
-              0.25,
+              0.05,
               "rgb(0,102,0)",
-              0.5,
-              "rgb(255,255,0)",
-              0.75,
+              0.1,
+              "rgb(220,220,32)",
+              0.2,
               "rgb(255,128,0)",
+              0.8,
+              "rgb(220,69,0)",
               0.99,
-              "rgb(255,128,0)",
+              "rgb(112,0,0)",
             ],
             "circle-stroke-color": "white",
             "circle-stroke-width": 0,
@@ -197,7 +224,37 @@ class MapContainer extends Component {
         },
         "waterway-label"
       );
+      var popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+        });
+  
+        map.on('mouseenter', 'phu-point', function (e) {
+          map.getCanvas().style.cursor = 'pointer';
+           
+          var coordinates = e.features[0].geometry.coordinates.slice();
+          var description = "<h6>Public Health Unit:</h6>" + "<p1>" + e.features[0].properties.healthUnit + "</p1>" +"<h6 padding=4px>Case Number:</h6>" +  "<p1>" + e.features[0].properties.caseNum + "</p1>";
+           
+          while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+          }
+           
+          popup.setLngLat(coordinates).setHTML(description).addTo(map);
+          });
+           
+          map.on('mouseleave', 'phu-point', function () {
+          map.getCanvas().style.cursor = '';
+          popup.remove();
+          });
+  
+          map.on('mouseleave', 'phu-point', function () {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+            });
     });
+
+
+    
   }
 
   handleOptionChange = async (field, value) => {
