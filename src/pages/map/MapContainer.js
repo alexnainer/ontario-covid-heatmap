@@ -239,23 +239,15 @@ class MapContainer extends Component {
         let description;
 
         let descriptionPsu =
-          "<h5>Public Health Unit:</h5>" +
+          "<h6>Public Health Unit:</h6>" +
           "<p1>" +
           e.features[0].properties.healthUnit +
-          "</p1>" +
-          "<h6 padding=4px>Case Number:</h6>" +
-          "<p1>" +
-          e.features[0].properties.caseNum +
-          "</p1>";
+          "</p1>" ;
 
         let descriptionSchool =
-          "<h5>City:</h5>" +
+          "<h6>City:</h6>" +
           "<p1>" +
           e.features[0].properties.city +
-          "</p1>" +
-          "<h6 padding=4px>Case Number:</h6>" +
-          "<p1>" +
-          e.features[0].properties.caseNum +
           "</p1>" +
           "<h6>Schools:</h6>";
 
