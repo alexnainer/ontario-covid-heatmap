@@ -242,7 +242,7 @@ class MapContainer extends Component {
           "<h6>Public Health Unit:</h6>" +
           "<p1>" +
           e.features[0].properties.healthUnit +
-          "</p1>" ;
+          "</p1>";
 
         let descriptionSchool =
           "<h6>City:</h6>" +
@@ -251,7 +251,7 @@ class MapContainer extends Component {
           "</p1>" +
           "<h6>Schools:</h6>";
 
-          let descriptionLtr =
+        let descriptionLtr =
           "<h6>City:</h6>" +
           "<p1>" +
           e.features[0].properties.city +
@@ -261,16 +261,16 @@ class MapContainer extends Component {
         if (e.features[0].properties.healthUnit) {
           description = descriptionPsu;
         } else if (e.features[0].properties.ltr) {
-        const schoolNames = e.features[0].properties.schoolNames.split(",");
-        if (schoolNames.length > 1) {
-          descriptionLtr += "<ul>";
-        }
-        for (const school of schoolNames) {
-          descriptionLtr += `<li>${school}</li>`;
-        }
-        descriptionLtr += "</ul>";
-        description = descriptionLtr;
-      } else {
+          const schoolNames = e.features[0].properties.schoolNames.split(",");
+          if (schoolNames.length > 1) {
+            descriptionLtr += "<ul>";
+          }
+          for (const school of schoolNames) {
+            descriptionLtr += `<li>${school}</li>`;
+          }
+          descriptionLtr += "</ul>";
+          description = descriptionLtr;
+        } else {
           const schoolNames = e.features[0].properties.schoolNames.split(",");
           if (schoolNames.length > 1) {
             descriptionSchool += "<ul>";
@@ -343,13 +343,18 @@ class MapContainer extends Component {
         <MapOptions
           options={this.state.options}
           handleOptionChange={this.handleOptionChange}
-          disabled={this.state.loading || this.state.source === "schools"}
+          disabled={
+            this.state.loading ||
+            this.state.source === "schools" ||
+            this.state.source === "ltr"
+          }
           numOfCases={this.state.heatMapData?.crs?.properties?.totalCases ?? ""}
         />
         <MapSourceOptions
           className="position-absolute map-source-options"
           source={this.state.source}
           handleSourceChange={this.handleSourceChange}
+          disabled={this.state.loading}
         />
         <div className="d-flex justify-content-center align-items-center">
           {this.state.loading && (

@@ -7,26 +7,34 @@ import FormLabel from "@material-ui/core/FormLabel";
 
 class MapSourceOptions extends Component {
   render() {
-    const { source } = this.props;
+    const { source, disabled } = this.props;
     return (
       <div className={this.props.className}>
         <FormControl component="fieldset">
           <FormLabel component="legend">Data Set</FormLabel>
           <RadioGroup
+            disabled={disabled}
             value={source}
             onChange={(e) => this.props.handleSourceChange(e.target.value)}
           >
             <FormControlLabel
+              disabled={disabled}
               value="psu"
               control={<Radio />}
               label="Public Health Units"
             />
             <FormControlLabel
+              disabled={disabled}
               value="schools"
               control={<Radio />}
               label="Schools"
             />
-            <FormControlLabel value="ltr" control={<Radio />} label="LTR" />
+            <FormControlLabel
+              value="ltr"
+              disabled={disabled}
+              control={<Radio />}
+              label="LTR"
+            />
           </RadioGroup>
         </FormControl>
       </div>
