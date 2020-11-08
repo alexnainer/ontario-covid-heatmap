@@ -2,12 +2,12 @@ const dataParser = (data) => {
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
-  
+
   data.result.records.forEach((record) => {
-  const phuCity = record.Reporting_PHU_City;
-    
-  if (cities[phuCity]) {
-    cities[phuCity].geoJson.properties.caseNum++;
+    const phuCity = record.Reporting_PHU_City;
+
+    if (cities[phuCity]) {
+      cities[phuCity].geoJson.properties.caseNum++;
     } else {
       cities[phuCity] = {
         geoJson: {
@@ -31,7 +31,8 @@ const dataParser = (data) => {
     }
     if (cities[phuCity].geoJson.properties.caseNum < min) {
       min = cities[phuCity].geoJson.properties.caseNum;
-    } if (cities[phuCity].geoJson.properties.caseNum > max) {
+    }
+    if (cities[phuCity].geoJson.properties.caseNum > max) {
       max = cities[phuCity].geoJson.properties.caseNum;
     }
   });
@@ -48,7 +49,6 @@ const dataParser = (data) => {
       },
     };
   });
-  console.log("cities" + cities);
   const geoJson = Object.values(cities).map((city) => city.geoJson);
   return {
     type: "FeatureCollection",
@@ -65,15 +65,16 @@ const dataParserSchools = async () => {
   const { data } = await api.getAllData();
 
   const schools = {};
+  const coordinates = {};
 
   data.result.records.forEach((record) => {
     const schoolName = record.school;
-    if (schools[school]) {
+    if (schools[schoolName]) {
       if (
         record.total_confirmed_cases >
-        schools[school].geoJson.properties.caseNum
+        schools[schoolName].geoJson.properties.caseNum
       ) {
-        schools[school].geoJson.properties.caseNum =
+        schools[schoolName].geoJson.properties.caseNum =
           record.total_confirmed_cases;
       }
     } else {
