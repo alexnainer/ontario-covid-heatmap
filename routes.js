@@ -24,12 +24,19 @@ router.get("/ontario/phu", async (req, res) => {
   });
 
   if (Object.values(options).length === 0) {
-    result = await api.getAllData();
+    result = await api.getAllPhuData();
   } else {
-    result = await api.getOptionsData(options);
+    result = await api.getOptionsPhuData(options);
   }
 
-  const parsedData = dataParser(result.data);
+  const parsedData = dataParser.parsePhu(result.data);
+  res.send(parsedData);
+});
+
+router.get("/ontario/schools", async (req, res) => {
+  const result = await api.getSchoolData();
+
+  const parsedData = await dataParser.parseSchools(result.data);
   res.send(parsedData);
 });
 

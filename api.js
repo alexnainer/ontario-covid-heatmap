@@ -1,23 +1,46 @@
 const axios = require("axios");
 
 const ontarioApi = "https://data.ontario.ca/api/3/action/datastore_search";
-const resourceId = "455fd63b-603d-4608-8216-7d8647f43350";
+const mapBoxApi = "https://api.mapbox.com/geocoding/v5/mapbox.places";
+const resourceIdPhu = "455fd63b-603d-4608-8216-7d8647f43350";
+const resourceIdSchools = "8b6d22e2-7065-4b0f-966f-02640be366f2";
 
-const limit = 90000;
+const mapBoxApiKey = process.env.MAPBOX_API_KEY;
 
-const getAllData = () => {
-  return axios.get(`${ontarioApi}?resource_id=${resourceId}&limit=${limit}`);
+const limitPhu = 90000;
+const limitSchools = 1000;
+
+const getAllPhuData = () => {
+  return axios.get(
+    `${ontarioApi}?resource_id=${resourceIdPhu}&limit=${limitPhu}`
+  );
 };
 
-const getOptionsData = (options) => {
+const getOptionsPhuData = (options) => {
   return axios.get(
-    `${ontarioApi}?resource_id=${resourceId}&limit=${limit}&filters=${JSON.stringify(
+    `${ontarioApi}?resource_id=${resourceIdPhu}&limit=${limitPhu}&filters=${JSON.stringify(
       options
     )}`
   );
 };
 
+const getSchoolData = () => {
+  return axios.get(
+    `${ontarioApi}?resource_id=${resourceIdSchools}&limit=${limitSchools}`
+  );
+};
+
+const getGeocoding = (query) => {
+  return axios.get(
+    `${mapBoxApi}/${encodeURIComponent(
+      query
+    )}.json?country=CA&access_token=${mapBoxApiKey}`
+  );
+};
+
 module.exports = {
-  getAllData,
-  getOptionsData,
+  getAllPhuData,
+  getOptionsPhuData,
+  getSchoolData,
+  getGeocoding,
 };

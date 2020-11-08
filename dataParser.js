@@ -1,4 +1,7 @@
-const dataParser = (data) => {
+const api = require("./api");
+const coordinates = require("./coordinates.json");
+
+const parsePhu = (data) => {
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
@@ -60,39 +63,88 @@ const dataParser = (data) => {
   };
 };
 
-const dataParserSchools = async () => {
-  // change below call
-  const { data } = await api.getAllData();
-
+const parseSchools = async (data) => {
   const schools = {};
-  const coordinates = {};
+  //   const coordinates = {};
+  let cities = {};
+  let min = Number.MAX_SAFE_INTEGER;
+  let max = 0;
 
-  data.result.records.forEach((record) => {
+  for (record of data.result.records) {
     const schoolName = record.school;
     if (schools[schoolName]) {
-      if (
-        record.total_confirmed_cases >
-        schools[schoolName].geoJson.properties.caseNum
-      ) {
-        schools[schoolName].geoJson.properties.caseNum =
-          record.total_confirmed_cases;
+      if (record.total_confirmed_cases > schools[schoolName].caseNum) {
+        schools[schoolName].caseNum = record.total_confirmed_cases;
       }
     } else {
       schools[schoolName] = {
+        city: record.municipality,
+        caseNum: record.total_confirmed_cases,
+      };
+    }
+  }
+
+  for (school of Object.keys(schools)) {
+    const city = schools[school].city;
+    if (cities[city]) {
+      cities[city].geoJson.properties.caseNum += schools[school].caseNum;
+      cities[city].geoJson.properties.schoolNames.push(school);
+    } else {
+      //   const query = `${city} Ontario`;
+      //   const { data } = await api.getGeocoding(query);
+      //   coordinates[city] = {
+      //     coordinates: coordinates[city].coordinates,
+      //   };
+      cities[city] = {
         geoJson: {
           type: "feature",
           geometry: {
             type: "Point",
-            coordinates: [],
+            coordinates: coordinates[city].coordinates,
           },
           properties: {
-            id: schoolName,
-            caseNum: record.total_confirmed_cases,
+            id: city,
+            city,
+            caseNum: schools[school].caseNum,
+            schoolNames: [school],
           },
         },
       };
     }
+    if (cities[city].geoJson.properties.caseNum < min) {
+      min = cities[city].geoJson.properties.caseNum;
+    }
+    if (cities[city].geoJson.properties.caseNum > max) {
+      max = cities[city].geoJson.properties.caseNum;
+    }
+  }
+
+  console.log("coordinates", coordinates);
+
+  cities = Object.values(cities).map((city) => {
+    return {
+      geoJson: {
+        ...city.geoJson,
+        properties: {
+          ...city.geoJson.properties,
+          caseNumNormalized:
+            (city.geoJson.properties.caseNum - min) / (max - min),
+        },
+      },
+    };
   });
+
+  const geoJson = Object.values(cities).map((city) => city.geoJson);
+
+  console.log("geoJson", geoJson);
+  return {
+    type: "FeatureCollection",
+    crs: {
+      type: "name",
+      properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+    },
+    features: geoJson,
+  };
 };
 
 // const dataParserLtc = async () => {
@@ -106,4 +158,4 @@ const dataParserSchools = async () => {
 //     if (longCareHomes[longCareHome])
 //   })
 
-module.exports = dataParser;
+module.exports = { parsePhu, parseSchools };
