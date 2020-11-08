@@ -19,6 +19,7 @@ class MapContainer extends Component {
         gender: "all",
         outcome: "all",
         age: "all",
+        cause: "all",
       },
       source: "psu",
     };
@@ -54,7 +55,7 @@ class MapContainer extends Component {
         layout: {
           "text-field": "{caseNum}",
           "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-          "text-size": ["step", ["zoom"], 0, 7.5, 12],
+          "text-size": ["step", ["zoom"], 0, 7, 12],
         },
         paint: {
           "text-color": "#ffffff",
@@ -233,9 +234,12 @@ class MapContainer extends Component {
       map.on("mouseenter", "phu-point", function (e) {
         map.getCanvas().style.cursor = "pointer";
 
-        var coordinates = e.features[0].geometry.coordinates.slice();
-        var description =
-          "<h6>Public Health Unit:</h6>" +
+        let coordinates = e.features[0].geometry.coordinates.slice();
+
+        let description;
+
+        let descriptionPsu =
+          "<h5>Public Health Unit:</h5>" +
           "<p1>" +
           e.features[0].properties.healthUnit +
           "</p1>" +
@@ -243,6 +247,34 @@ class MapContainer extends Component {
           "<p1>" +
           e.features[0].properties.caseNum +
           "</p1>";
+
+        let descriptionSchool =
+          "<h5>City:</h5>" +
+          "<p1>" +
+          e.features[0].properties.city +
+          "</p1>" +
+          "<h6 padding=4px>Case Number:</h6>" +
+          "<p1>" +
+          e.features[0].properties.caseNum +
+          "</p1>" +
+          "<h6>Schools:</h6>";
+
+        if (e.features[0].properties.healthUnit) {
+          description = descriptionPsu;
+        } else {
+          const schoolNames = e.features[0].properties.schoolNames.split(",");
+          if (schoolNames.length > 1) {
+            descriptionSchool += "<ul>";
+          }
+          for (const school of schoolNames) {
+            descriptionSchool += `<li>${school}</li>`;
+            console.log("school", school);
+          }
+          descriptionSchool += "</ul>";
+          description = descriptionSchool;
+        }
+
+        console.log("description", description);
 
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -277,7 +309,7 @@ class MapContainer extends Component {
   };
 
   handleSourceChange = async (source) => {
-    this.setState({ loading: true, source });
+    await this.setState({ loading: true, source });
 
     let response;
 
@@ -300,6 +332,7 @@ class MapContainer extends Component {
         <MapOptions
           options={this.state.options}
           handleOptionChange={this.handleOptionChange}
+          disabled={this.state.loading || this.state.source === "schools"}
         />
         <MapSourceOptions
           className="position-absolute map-source-options"
