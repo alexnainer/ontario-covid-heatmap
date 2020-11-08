@@ -1,0 +1,61 @@
+import React, { Component } from "react";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+
+class MapOptions extends Component {
+  render() {
+    const { options } = this.props;
+    return (
+      <div>
+        <div className="row justify-content-center pb-2">
+          <div className="col-auto">
+            <FormControl>
+              <InputLabel>Gender</InputLabel>
+              <Select
+                value={options.gender}
+                onChange={this.props.handleGenderChange}
+              >
+                <MenuItem value={"all"}>All</MenuItem>
+                <MenuItem value={"MALE"}>Male</MenuItem>
+                <MenuItem value={"FEMALE"}>Female</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className="col-auto">
+            <FormControl>
+              <InputLabel>Outcome</InputLabel>
+              <Select
+                value={options.outcome}
+                onChange={this.props.handleOutcomeChange}
+              >
+                <MenuItem value={"all"}>Total</MenuItem>
+                <MenuItem value={"Resolved"}>Resolved</MenuItem>
+                <MenuItem value={"Not Resolved"}>Active</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className="col-auto">
+            <FormControl>
+              <InputLabel>Age</InputLabel>
+              <Select value={options.age} onChange={this.props.handleAgeChange}>
+                <MenuItem value={"all"}>All</MenuItem>
+                <MenuItem value={"10s"}>10-19</MenuItem>
+                <MenuItem value={"20s"}>20-29</MenuItem>
+                <MenuItem value={"30s"}>30-39</MenuItem>
+                <MenuItem value={"40s"}>40-49</MenuItem>
+                <MenuItem value={"50s"}>50-59</MenuItem>
+                <MenuItem value={"60s"}>60-69</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default MapOptions;
