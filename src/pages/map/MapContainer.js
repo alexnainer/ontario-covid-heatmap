@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import MapOptions from "./MapOptions";
 import mapboxgl from "mapbox-gl";
 import "./MapContainer.css";
 import phuApi from "../../api/phuApi";
@@ -12,11 +13,16 @@ class MapContainer extends Component {
     this.state = {
       heatMapData: [],
       loading: true,
+      options: {
+        gender: "all",
+        outcome: "all",
+        age: "all",
+      },
     };
   }
 
   async componentDidMount() {
-    const { data } = await phuApi.getHeatMapAll();
+    const { data } = await phuApi.getHeatMap(this.state.options);
     console.log("data", data);
     this.setState({ heatMapData: data, loading: false });
 
@@ -216,15 +222,47 @@ class MapContainer extends Component {
   
   }
 
+  handleGenderChange = async (event) => {
+    await this.setState({
+      options: { ...this.state.options, gender: event.target.value },
+    });
+    const data = await phuApi.getHeatMap(this.state.options);
+    this.setState({ data });
+  };
+
+  handleOutcomeChange = async (event) => {
+    await this.setState({
+      options: { ...this.state.options, outcome: event.target.value },
+    });
+    const data = await phuApi.getHeatMap(this.state.options);
+    this.setState({ data });
+  };
+
+  handleAgeChange = async (event) => {
+    await this.setState({
+      options: { ...this.state.options, age: event.target.value },
+    });
+    const data = await phuApi.getHeatMap(this.state.options);
+    this.setState({ data });
+  };
+
   render() {
     return (
-      <div className="d-flex justify-content-center">
-        <div className="map-container">
-          <div
-            ref={(el) => (this.mapContainer = el)}
-            id="map"
-            className="map"
-          />
+      <div>
+        <MapOptions
+          options={this.state.options}
+          handleGenderChange={this.handleGenderChange}
+          handleOutcomeChange={this.handleOutcomeChange}
+          handleAgeChange={this.handleAgeChange}
+        />
+        <div className="d-flex justify-content-center">
+          <div className="map-container">
+            <div
+              ref={(el) => (this.mapContainer = el)}
+              id="map"
+              className="map"
+            />
+          </div>
         </div>
       </div>
     );
