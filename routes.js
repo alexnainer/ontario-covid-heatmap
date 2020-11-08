@@ -19,6 +19,9 @@ router.get("/ontario/phu", async (req, res) => {
           break;
         case "age":
           options.Age_Group = query[param];
+          break;
+        case "cause":
+          options.Case_AcquisitionInfo = query[param];
       }
     }
   });

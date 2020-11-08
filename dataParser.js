@@ -78,7 +78,7 @@ const parseSchools = async (data) => {
       }
     } else {
       schools[schoolName] = {
-        city: record.municipality,
+        city: record.municipality.trim(),
         caseNum: record.total_confirmed_cases,
       };
     }
@@ -88,13 +88,14 @@ const parseSchools = async (data) => {
     const city = schools[school].city;
     if (cities[city]) {
       cities[city].geoJson.properties.caseNum += schools[school].caseNum;
-      cities[city].geoJson.properties.schoolNames.push(school);
+      cities[city].geoJson.properties.schoolNames += `,${school}`;
     } else {
       //   const query = `${city} Ontario`;
       //   const { data } = await api.getGeocoding(query);
       //   coordinates[city] = {
       //     coordinates: coordinates[city].coordinates,
       //   };
+      console.log("coordinates[city]", coordinates[city]);
       cities[city] = {
         geoJson: {
           type: "feature",
@@ -106,7 +107,7 @@ const parseSchools = async (data) => {
             id: city,
             city,
             caseNum: schools[school].caseNum,
-            schoolNames: [school],
+            schoolNames: school,
           },
         },
       };
