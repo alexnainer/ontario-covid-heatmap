@@ -258,7 +258,7 @@ class MapContainer extends Component {
           "</p1>" +
           "<h6>Long Term Care Home:</h6>";
 
-        let descriptionChildCare = 
+        let descriptionChildCare =
           "<h6>City:</h6>" +
           "<p1>" +
           e.features[0].properties.city +

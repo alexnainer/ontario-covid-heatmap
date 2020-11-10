@@ -35,12 +35,6 @@ class MapSourceOptions extends Component {
               control={<Radio />}
               label="LTR"
             />
-            <FormControlLabel
-              value="childCare"
-              disabled={disabled}
-              control={<Radio />}
-              label="LCC"
-            />
           </RadioGroup>
         </FormControl>
       </div>
