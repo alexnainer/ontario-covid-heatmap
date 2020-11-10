@@ -5,12 +5,14 @@ const mapBoxApi = "https://api.mapbox.com/geocoding/v5/mapbox.places";
 const resourceIdPhu = "455fd63b-603d-4608-8216-7d8647f43350";
 const resourceIdSchools = "8b6d22e2-7065-4b0f-966f-02640be366f2";
 const resourceIdLtr = "4b64488a-0523-4ebb-811a-fac2f07e6d59";
+const resourceIdChildCare = "eee282d3-01e6-43ac-9159-4ba694757aea";
 
 const mapBoxApiKey = process.env.MAPBOX_API_KEY;
 
 const limitPhu = 90000;
 const limitSchools = 1000;
 const limitLtr = 15000;
+const limitChildCare = 5000;
 
 const getAllPhuData = () => {
   return axios.get(
@@ -38,6 +40,11 @@ const getLtrData = () => {
   );
 };
 
+const getChildCareData = () => {
+  return axios.get(`${ontarioApi}?resource_id=${resourceIdChildCare}&limit=${limitChildCare}`
+  );
+};
+
 const getGeocoding = (query) => {
   return axios.get(
     `${mapBoxApi}/${encodeURIComponent(
@@ -50,6 +57,7 @@ module.exports = {
   getAllPhuData,
   getOptionsPhuData,
   getSchoolData,
+  getChildCareData,
   getGeocoding,
   getLtrData,
 };

@@ -1,6 +1,7 @@
 const api = require("./api");
 const coordinates = require("./coordinates.json");
 const coordinatesLtr = require("./coordinatesLtr.json");
+const coordinatesChildCare = require("./coordinatesChildCare.json");
 
 const parsePhu = (data) => {
   let cities = {};
@@ -69,7 +70,6 @@ const parsePhu = (data) => {
 
 const parseSchools = async (data) => {
   const schools = {};
-  //   const coordinates = {};
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
@@ -168,7 +168,7 @@ const parseSchools = async (data) => {
 
 const parseLtr = async (data) => {
   const ltrs = {};
-  const coordinates1 = {};
+
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
@@ -218,8 +218,8 @@ const parseLtr = async (data) => {
       totalCases += ltrs[ltr].caseNum;
     } else {
       let coords = [];
-      if (coordinates[city]) {
-        coords = coordinates[city].coordinates;
+      if (coordinatesLtr[city]) {
+        coords = coordinatesLtr[city].coordinates;
       } else {
         console.log(city);
         const query = `${city} Ontario`;
@@ -292,4 +292,104 @@ const parseLtr = async (data) => {
   };
 };
 
-module.exports = { parsePhu, parseSchools, parseLtr };
+const parseChildCare = async (data) => {
+  const childCares = {};
+  const coordinates = {};
+  let cities = {};
+  let min = Number.MAX_SAFE_INTEGER;
+  let max = 0;
+  let totalCases = 0;
+
+  for (record of data.result.records) {
+    const lccName = record.lcc_name;
+    if (childCares[lccName]) {
+      if (record.id >= childCares[lccName].id) {
+        childCares[lccName].caseNum = record.total_confirmed_cases;
+      }
+    } else {
+      childCares[lccName] = {
+        city: record.municipality.trim(),
+        caseNum: record.total_confirmed_cases,
+        id: record._id,
+      };
+    }
+  }
+
+  for (lcc of Object.keys(childCares)) {
+    const city = childCares[lcc].city;
+    if (cities[city]) {
+      cities[city].geoJson.properties.caseNum += childCares[lcc].caseNum;
+      totalCases += childCares[lcc].caseNum;
+      cities[
+        city
+      ].geoJson.properties.childCareNames += `,${lcc} (${childCares[lcc].caseNum})`;
+    } else {
+      let coords = [];
+      if (coordinatesChildCare[city]) {
+        coords = coordinatesChildCare[city].coordinates;
+      } else {
+        console.log(city);
+        const query = `${city} Ontario`;
+        const { data } = await api.getGeocoding(query);
+        coords = data.features[0].geometry.coordinates;
+        coordinatesChildCare[city] = {
+          coordinates: coords,
+        };
+      }
+      totalCases += childCares[lcc].caseNum;
+      cities[city] = {
+        geoJson: {
+          type: "feature",
+          geometry: {
+            type: "Point",
+            coordinates: coords,
+          },
+          properties: {
+            id: city,
+            city,
+            caseNum: childCares[lcc].caseNum,
+            childCareNames: `${lcc} (${childCares[lcc].caseNum})`,
+          },
+        },
+      };
+    }
+    if (cities[city].geoJson.properties.caseNum < min) {
+      min = cities[city].geoJson.properties.caseNum;
+    }
+    if (cities[city].geoJson.properties.caseNum > max) {
+      max = cities[city].geoJson.properties.caseNum;
+    }
+  }
+
+  console.log("coordinates", coordinates);
+
+  cities = Object.values(cities).map((city) => {
+    return {
+      geoJson: {
+        ...city.geoJson,
+        properties: {
+          ...city.geoJson.properties,
+          caseNumNormalized:
+            (city.geoJson.properties.caseNum - min) / (max - min),
+        },
+      },
+    };
+  });
+
+  const geoJson = Object.values(cities).map((city) => city.geoJson);
+
+  console.log("geoJson", geoJson);
+  return {
+    type: "FeatureCollection",
+    crs: {
+      type: "name",
+      properties: {
+        name: "urn:ogc:def:crs:OGC:1.3:CRS84",
+        totalCases,
+      },
+    },
+    features: geoJson,
+  };
+}
+
+module.exports = { parsePhu, parseSchools, parseLtr, parseChildCare };

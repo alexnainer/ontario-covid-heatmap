@@ -50,4 +50,11 @@ router.get("/ontario/ltr", async (req, res) => {
   res.send(parsedData);
 });
 
+router.get("/ontario/childCare", async (req, res) => {
+  const result = await api.getChildCareData();
+
+  const parsedData = await dataParser.parseChildCare(result.data);
+  res.send(parsedData);
+});
+
 module.exports = router;
