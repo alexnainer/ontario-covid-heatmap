@@ -2,6 +2,7 @@ const api = require("./api");
 const coordinates = require("./coordinates.json");
 const coordinatesLtr = require("./coordinatesLtr.json");
 const coordinatesChildCare = require("./coordinatesChildCare.json");
+// const fs = require("fs");
 
 const parsePhu = (data) => {
   let cities = {};
@@ -70,6 +71,7 @@ const parsePhu = (data) => {
 
 const parseSchools = async (data) => {
   const schools = {};
+  //   const coordinates = {};
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
@@ -110,6 +112,11 @@ const parseSchools = async (data) => {
         //   coordinates: coordinates[city].coordinates,
         // };
       }
+      //   const query = `${city} Ontario`;
+      //   const { data } = await api.getGeocoding(query);
+      //   coords = data.features[0].geometry.coordinates;
+      //   coordinates[city] = { coordinates: coords };
+
       totalCases += schools[school].caseNum;
       cities[city] = {
         geoJson: {
@@ -135,7 +142,15 @@ const parseSchools = async (data) => {
     }
   }
 
-  console.log("coordinates", coordinates);
+  //   console.log("coordinates", coordinates);
+
+  //   fs.writeFile("coordinates.json", JSON.stringify(coordinates), (err) => {
+  //     // throws an error, you could also catch it here
+  //     if (err) throw err;
+
+  //     // success case, the file was saved
+  //     console.log("File saved!");
+  //   });
 
   cities = Object.values(cities).map((city) => {
     return {
@@ -168,7 +183,7 @@ const parseSchools = async (data) => {
 
 const parseLtr = async (data) => {
   const ltrs = {};
-
+  //   const coordinatesLtr = {};
   let cities = {};
   let min = Number.MAX_SAFE_INTEGER;
   let max = 0;
@@ -226,6 +241,12 @@ const parseLtr = async (data) => {
         const { data } = await api.getGeocoding(query);
         coords = data.features[0].geometry.coordinates;
       }
+
+      //   const query = `${city} Ontario`;
+      //   const { data } = await api.getGeocoding(query);
+      //   coords = data.features[0].geometry.coordinates;
+      //   coordinatesLtr[city] = { coordinates: coords };
+
       totalCases += ltrs[ltr].caseNum;
       cities[city] = {
         geoJson: {
@@ -255,12 +276,12 @@ const parseLtr = async (data) => {
 
   //   console.log("coordinates", coordinates1);
 
-  //   fs.writeFile("coordinatesLtr.json", JSON.stringify(coordinates1), (err) => {
+  //   fs.writeFile("coordinatesLtr.json", JSON.stringify(coordinatesLtr), (err) => {
   //     // throws an error, you could also catch it here
   //     if (err) throw err;
 
   //     // success case, the file was saved
-  //     console.log("Lyric saved!");
+  //     console.log("File saved!");
   //   });
 
   cities = Object.values(cities).map((city) => {
@@ -390,6 +411,6 @@ const parseChildCare = async (data) => {
     },
     features: geoJson,
   };
-}
+};
 
 module.exports = { parsePhu, parseSchools, parseLtr, parseChildCare };
