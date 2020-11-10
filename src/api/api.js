@@ -24,9 +24,8 @@ const api = {
   },
 
   getChildCareHeatMap() {
-    return axios.get('/childCare');
+    return axios.get("/childCare");
   },
-  
 };
 
 export default api;
