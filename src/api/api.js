@@ -22,6 +22,11 @@ const api = {
   getLtrHeatMap() {
     return axios.get(`/ltr`);
   },
+
+  getChildCareHeatMap() {
+    return axios.get('/childCare');
+  },
+  
 };
 
 export default api;

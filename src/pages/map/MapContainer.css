@@ -31,15 +31,29 @@
 
 h6 {
   font-weight: 900;
+  font-family: 'Open Sans Light', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
 }
 
 h5 {
   font-weight: 900;
+  font-family: 'Open Sans Light', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
 }
 
 .p1 {
   font-size: 103%;
   margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
 }
 
 /* .mapboxgl-canvas {

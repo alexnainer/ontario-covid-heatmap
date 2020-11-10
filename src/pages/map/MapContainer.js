@@ -258,6 +258,13 @@ class MapContainer extends Component {
           "</p1>" +
           "<h6>Long Term Care Home:</h6>";
 
+        let descriptionChildCare = 
+          "<h6>City:</h6>" +
+          "<p1>" +
+          e.features[0].properties.city +
+          "</p1>" +
+          "<h6>Child Care Center:</h6>";
+
         if (e.features[0].properties.healthUnit) {
           description = descriptionPsu;
         } else if (e.features[0].properties.ltr) {
@@ -270,6 +277,16 @@ class MapContainer extends Component {
           }
           descriptionLtr += "</ul>";
           description = descriptionLtr;
+        } else if (e.features[0].properties.childCareNames) {
+          const lccNames = e.features[0].properties.childCareNames.split(",");
+          if (lccNames.length > 1) {
+            descriptionChildCare += "<ul>";
+          }
+          for (const lcc of lccNames) {
+            descriptionChildCare += `<li>${lcc}</li>`;
+          }
+          descriptionChildCare += "</ul>";
+          description = descriptionChildCare;
         } else {
           const schoolNames = e.features[0].properties.schoolNames.split(",");
           if (schoolNames.length > 1) {
@@ -331,6 +348,8 @@ class MapContainer extends Component {
       case "ltr":
         response = await api.getLtrHeatMap();
         break;
+      case "childCare":
+        response = await api.getChildCareHeatMap();
       default:
     }
     map.getSource("phu").setData(response.data);
