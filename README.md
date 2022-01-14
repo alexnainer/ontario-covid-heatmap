@@ -20,3 +20,4 @@ a weekend at the [Queen's HackHer hackathon](https://qwic.org/hackHer).
 - **[React.js](https://reactjs.org/)**
 - **[Node.js](https://nodejs.org/)**
 - **[Express](https://expressjs.com/)**
+- **[Mapbox](https://www.mapbox.com/)**
