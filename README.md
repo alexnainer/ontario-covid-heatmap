@@ -6,7 +6,7 @@ a weekend at the [Queen's HackHer hackathon](https://qwic.org/hackHer).
 
 <br>
 <div align="center">
-    <img src="https://i.imgur.com/FLiZkgN.png" alt="Eco Location Screenshot" width="75%" />
+    <img src="https://i.imgur.com/FLiZkgN.png" alt="Ontario COVID Heatmap Screenshot" width="75%" />
 </div>
 <br>
 
