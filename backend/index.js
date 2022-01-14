@@ -1,10 +1,10 @@
 const express = require("express");
 const app = express();
-const port = 3001;
-
 require("dotenv").config();
-
 const cors = require("cors");
+
+const host = process.env.HOST;
+const port = process.env.PORT;
 
 app.use(cors());
 app.options("*", cors());
@@ -13,5 +13,5 @@ const router = require("./routes");
 app.use("/api/v1.0", router);
 
 app.listen(port, () => {
-  console.log(`alekx hospital listening at http://localhost:${port}`);
+  console.log(`backend listening at http://${host}:${port}`);
 });
