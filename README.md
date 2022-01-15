@@ -4,6 +4,8 @@ Ontario COVID Heatmap is a React webapp that displays COVID cases by public heal
 residences. The app also has the ability to filter by gender, outcome, age and cause. This was built over
 a weekend at the [Queen's HackHer hackathon](https://qwic.org/hackHer).
 
+Check it out at [ontario-covid-heatmap.jugovic.io](https://ontario-covid-heatmap.jugovic.io) or [alexnainer.com/ontario-covid-heatmap](https://alexnainer.com/ontario-covid-heatmap)
+
 <br>
 <div align="center">
     <img src="https://i.imgur.com/FLiZkgN.png" alt="Ontario COVID Heatmap Screenshot" width="75%" />
