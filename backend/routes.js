@@ -3,6 +3,10 @@ const router = express.Router();
 const dataParser = require("./dataParser");
 const api = require("./api");
 
+router.get("/ping", async (req, res) => {
+  res.sendStatus(200);
+});
+
 router.get("/ontario/phu", async (req, res) => {
   const { query } = req;
   let options = {};
